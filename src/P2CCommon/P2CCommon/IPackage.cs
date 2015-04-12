@@ -8,9 +8,9 @@ namespace P2CCommon
 {
 	public interface IPackage 
 	{
-		IPublicProfile PublicProfile{ get; private set; }
+		IPublicProfile PublicProfile{ get; }
  
-		byte[] Data{ get; private set; }
+		byte[] Data{ get; }
 
 	}
 }

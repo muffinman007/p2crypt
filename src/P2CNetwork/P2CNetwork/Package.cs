@@ -15,7 +15,8 @@ using P2CCommon;
 namespace P2CNetwork
 {
     [Serializable]
-    public class Package : IPackage {
+    public class Package : IPackage 
+	{
 
 		#region Fields
 
@@ -27,13 +28,14 @@ namespace P2CNetwork
 
 		#region Properties
 
-		public IPublicProfile PublicProfile {
+		public IPublicProfile PublicProfile 
+		{
 			get{ return publicProfile; }
-			private set{ publicProfile = value; }
 		}
 
-		public byte[] Data {
-			get { throw new NotImplementedException(); }
+		public byte[] Data 
+		{
+			get { return data; }
 		}
 
         #endregion Properties
