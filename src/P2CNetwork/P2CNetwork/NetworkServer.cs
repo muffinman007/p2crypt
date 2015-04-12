@@ -9,7 +9,7 @@
 #endregion Header
 
 using System;
-
+using System.Net.Sockets;
 
 namespace P2CNetwork 
 {
@@ -59,11 +59,6 @@ namespace P2CNetwork
 					return null;						// should we return an empty package?
 				}
 			}
-
-			private set
-			{
-				package = value;
-			}
 		}
 
 		#endregion Properties
@@ -78,7 +73,6 @@ namespace P2CNetwork
 		{
 			if(hasServerStart)
 				return;
-
 
 			hasServerStart = true;
 		}
