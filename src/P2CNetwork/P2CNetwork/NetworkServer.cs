@@ -10,6 +10,7 @@
 
 using System;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace P2CNetwork 
 {
@@ -24,6 +25,9 @@ namespace P2CNetwork
 		// Socket data
 		int port;
 		int backlog;
+
+		// Controlling Task
+		CancellationTokenSource tokenSource;
 
 		Package package;
 
