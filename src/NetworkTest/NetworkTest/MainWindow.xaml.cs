@@ -84,14 +84,16 @@ namespace NetworkTest
 			txtStatus.Text = "Server running";
 		}
 
-		private async void btnStop_Click(object sender, RoutedEventArgs e) {
-			networkServer.Disconnect();
+		private void btnStop_Click(object sender, RoutedEventArgs e) {
+			
+			if(isWindowClosing)
+				networkServer.Disconnect(true);
+			else
+				networkServer.Disconnect(false);
+
 			hasServerStarted = false;
 
 			if(!isWindowClosing){
-				// notified everyone user logoff
-				Task.Factory.StartNew(()=>{ networkServer.Send(PackageStatus.LogOff, string.Empty); });
-
 				btnStart.IsEnabled = true;
 
 				btnStop.IsEnabled = false;
@@ -100,16 +102,7 @@ namespace NetworkTest
 				btnChangeNick.IsEnabled = false;
 
 				txtStatus.Text = "Server stopped";
-			}
-			else{
-				// give time to send out notification
-				await LogoffNotificationAsync();
-			}
-		}
-
-		async Task LogoffNotificationAsync(){
-			await Task.Factory.StartNew(()=>{ networkServer.Send(PackageStatus.LogOff, string.Empty); });
-			return;
+			}			
 		}
 
 

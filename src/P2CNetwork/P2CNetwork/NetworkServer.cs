@@ -171,13 +171,16 @@ namespace Network
 		/// <summary>
 		/// Gracefully disconnect the NetworkServer. Disconnect is instant. Disconnect stop you from receiving data.
 		/// </summary>
-		public void Disconnect()
+		public void Disconnect(bool isWindowExiting)
 		{
+			// prevent calling Disconnect() before serverTask started
 			if(serverTask == null)
 				return;
 
-
-			Task.Factory.StartNew(()=>{ SendOther(PackageStatus.LogOff, null); });
+			if(isWindowExiting)
+				SendOther(PackageStatus.LogOff, null); // exiting so doesn't matter if ui becomes non-responsive, UI is already hidden
+			else
+				Task.Factory.StartNew(()=>{ SendOther(PackageStatus.LogOff, null); });
 
 			//server.Shutdown(SocketShutdown.Both);
 			server.Close();
