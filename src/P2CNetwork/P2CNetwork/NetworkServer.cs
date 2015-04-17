@@ -65,7 +65,7 @@ namespace Network
 
 		#region Constructors
 
-		public NetworkServer(IPublicProfile userPublicProfile, System.Windows.Controls.Control control, int port = 80, int backlog = 100)
+		public NetworkServer(IPublicProfile userPublicProfile, System.Windows.Controls.Control control, int port = 8080, int backlog = 100)
 		{	
 			this.userPublicProfile = userPublicProfile;
 			crossCommuniationHack = control;
