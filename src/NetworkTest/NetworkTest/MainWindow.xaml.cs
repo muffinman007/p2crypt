@@ -57,7 +57,7 @@ namespace NetworkTest
 			isWindowClosing = false;
 		}
 
-		private void btnStart_Click(object sender, RoutedEventArgs e) {
+		private async void btnStart_Click(object sender, RoutedEventArgs e) {
 			if(userAccount == null)
 				userAccount = new UserAccount(){UserNick = txtNick.Text};
 			
@@ -70,8 +70,8 @@ namespace NetworkTest
 				networkServer.P2CDS += new NetworkServer.P2CDeliveryService(PackageHandler);
 			}
 
-			// we need to await this but most also give user a progress remote or a busy signal letting them know the network is starting up
-			networkServer.Start();			
+			
+			await networkServer.StartAsync();			
 
 			btnStart.IsEnabled = false;
 			hasServerStarted = true;

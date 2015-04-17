@@ -29,6 +29,7 @@ using System.Windows.Controls;
 using P2CCore;
 using System.IO;
 using P2CCommon;
+using System.Net.NetworkInformation;
 
 namespace Network 
 {
@@ -43,6 +44,7 @@ namespace Network
 		//switch
 		bool hasStartedOnce;						// allow for loging back in when user disconnect.
 		bool hasPackage;
+		bool isUpnpFeatureOn;
 
 		Package arrivedPackage;
 
@@ -55,8 +57,10 @@ namespace Network
 		Task serverTask;
 
 		IPublicProfile userPublicProfile;
-
+		
+		const int recommendedPort = 15;					// this value has to be below 1024
 		int defaultPort;
+		int backlog;
 
 		System.Windows.Controls.Control crossCommuniationHack;
 
@@ -72,24 +76,13 @@ namespace Network
 
 			hasStartedOnce = false;
 			hasPackage = false;
+			isUpnpFeatureOn = false;
 	
 			friendsProfileDict		= new ConcurrentDictionary<Guid,IPublicProfile>();
 			friendsIPaddressDict	= new ConcurrentDictionary<Guid,IPEndPoint>();
 
-			defaultPort = port;
-
-			IPAddress localIP = null;
-			foreach(var ip in Dns.GetHostAddresses(Dns.GetHostName())){
-				if(ip.AddressFamily == AddressFamily.InterNetwork){
-					localIP = ip;
-					break;
-				}
-			}
-
-			server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			server.Bind(new IPEndPoint(localIP, port));
-			server.LingerState = new LingerOption(false, 0);
-			server.Listen(backlog);			
+			defaultPort = port;	
+			this.backlog = backlog;	
 		}
 
 		#endregion Constructors
@@ -120,10 +113,51 @@ namespace Network
 		/// <summary>
 		/// Start the process in which NetworkServer listen for incoming connection. Runs on a Separate Thread.
 		/// </summary>
-		public void Start()
+		public async void StartAsync()
 		{
 			if(serverTask != null)
 				return;
+
+			TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+
+			if(!hasStartedOnce){
+				Task t1 = Task.Run(()=>
+							{
+								IPAddress localIP = null;
+								foreach(var ip in Dns.GetHostAddresses(Dns.GetHostName())){
+									if(ip.AddressFamily == AddressFamily.InterNetwork){
+										localIP = ip;
+										break;
+									}
+								}
+
+								// first check if default port is not the recommendedPort
+								if(!(defaultPort == recommendedPort))
+								{
+									if(IsLanIP(localIP))
+									{
+										// set up UPnP
+
+
+										isUpnpFeatureOn = true;
+									}
+								}								
+
+								server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+								server.Bind(new IPEndPoint(localIP, defaultPort));
+								server.LingerState = new LingerOption(false, 0);
+								server.Listen(backlog);	
+							});
+
+				await t1;
+				
+
+			}
+
+			continue to work in here
+				set tcs.SetResult(true);
+				return tcs.Task 
+
 
 			tokenSource = new CancellationTokenSource();
 			
@@ -510,6 +544,20 @@ namespace Network
 									"Message: " + ex.Message + Environment.NewLine);
 				});
 			}
+		}
+
+
+		// code from http://stackoverflow.com/questions/7232287/check-if-ip-is-in-lan-behind-firewalls-and-routers
+		bool IsLanIP(IPAddress address)
+		{
+			var ping = new Ping();
+			var rep = ping.Send(address, 100, new byte[]{1}, new PingOptions()
+			{
+				DontFragment = true,
+				Ttl = 1
+			});
+
+			return rep.Status != IPStatus.TtlExpired && rep.Status != IPStatus.TimedOut && rep.Status != IPStatus.TimeExceeded;
 		}
 
 
