@@ -1,28 +1,40 @@
 ﻿<Window x:Class="NetworkTest.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Network Test" Height="508" Width="760">
-	<Grid Margin="0,0,2,-4" Height="482" VerticalAlignment="Top">
-		<TextBox x:Name="userNickTxtBox" HorizontalAlignment="Left" Height="23" Margin="73,13,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="172" Cursor="IBeam" ToolTip="Enter your user name." TextChanged="userNickTxtBox_TextChanged"/>
-		<Label Content="User Nick:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Cursor="None" IsEnabled="False" Foreground="Black"/>
-		<ComboBox x:Name="ipFirstByte" HorizontalAlignment="Left" Margin="339,13,0,0" VerticalAlignment="Top" Width="44" MaxDropDownHeight="255"/>
-		<Label Content="." HorizontalAlignment="Left" Margin="382,18,0,0" VerticalAlignment="Top" IsEnabled="False"/>
-		<ComboBox x:Name="ipSecondByte" HorizontalAlignment="Left" Margin="395,13,0,0" VerticalAlignment="Top" Width="44" MaxDropDownHeight="255"/>
-		<Label Content="." HorizontalAlignment="Left" Margin="438,18,0,0" VerticalAlignment="Top" IsEnabled="False"/>
-		<ComboBox x:Name="ipThirdByte" HorizontalAlignment="Left" Margin="451,13,0,0" VerticalAlignment="Top" Width="44" MaxDropDownHeight="255"/>
-		<Label Content="." HorizontalAlignment="Left" Margin="494,18,0,0" VerticalAlignment="Top" IsEnabled="False"/>
-		<ComboBox x:Name="ipFourthByte" HorizontalAlignment="Left" Margin="506,13,0,0" VerticalAlignment="Top" Width="44" MaxDropDownHeight="255"/>
-		<Label Content="Distination IP:" HorizontalAlignment="Left" Margin="255,13,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.553,-0.615"/>
-		<TextBox x:Name="txtMessage" HorizontalAlignment="Left" Height="35" Margin="10,402,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="540"/>
-		<Label Content="Message:" HorizontalAlignment="Left" Margin="10,371,0,0" VerticalAlignment="Top"/>
-		<Button x:Name="btnShakeHand" Content="Shake Hand" HorizontalAlignment="Left" Margin="451,44,0,0" VerticalAlignment="Top" Width="99" IsEnabled="False" Click="btnShakeHand_Click"/>
-		<Button x:Name="btnSend" Content="Send" HorizontalAlignment="Left" Margin="10,442,0,0" VerticalAlignment="Top" Width="75" IsEnabled="False" RenderTransformOrigin="0.453,2.227" Click="btnSend_Click_1"/>
-		<TextBox x:Name="txtChatWindow" HorizontalAlignment="Left" Height="273" Margin="10,98,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="540"/>
-		<Label Content="Chat Window:" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top" IsEnabled="False"/>
-		<TextBox x:Name="txtFriendsList" HorizontalAlignment="Left" Height="425" Margin="568,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="165"/>
-		<Label Content="Friends:" HorizontalAlignment="Left" Margin="568,13,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.474,0.538"/>
-		<Button x:Name="btnDisconnect" Content="DISCONNECT SEVER" HorizontalAlignment="Left" Margin="99,42,0,0" VerticalAlignment="Top" Width="146" Click="btnDisconnect_Click" Height="24" IsEnabled="False"/>
-		<Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top" Width="75" Height="22" IsEnabled="False" Click="Button_Click"/>
+        Title="Network Test" Height="510" Width="720" Closing="Window_Closing">
+	<Grid>
+		<Label Content="Nick:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+		<TextBox x:Name="txtNick" HorizontalAlignment="Left" Height="23" Margin="51,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="192" TextChanged="txtNick_TextChanged"/>
+		<Label Content="Remote:" HorizontalAlignment="Left" Margin="198,39,0,0" VerticalAlignment="Top"/>
+		<ComboBox x:Name="cbFirstIP" HorizontalAlignment="Left" Margin="252,41,0,0" VerticalAlignment="Top" Width="44"/>
+		<Label Content="." HorizontalAlignment="Left" Margin="292,47,0,0" VerticalAlignment="Top"/>
+		<ComboBox x:Name="cbSecondIP" HorizontalAlignment="Left" Margin="302,41,0,0" VerticalAlignment="Top" Width="44"/>
+		<Label Content="." HorizontalAlignment="Left" Margin="343,46,0,0" VerticalAlignment="Top"/>
+		<ComboBox x:Name="cbThirdIP" HorizontalAlignment="Left" Margin="353,41,0,0" VerticalAlignment="Top" Width="44"/>
+		<Label Content="." HorizontalAlignment="Left" Margin="394,46,0,0" VerticalAlignment="Top"/>
+		<ComboBox x:Name="cbFourthIP" HorizontalAlignment="Left" Margin="403,41,0,0" VerticalAlignment="Top" Width="44"/>
+		<Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Width="75" Click="btnStart_Click" IsDefault="True" IsEnabled="False"/>
+		<Button x:Name="btnStop" Content="Stop" HorizontalAlignment="Left" Margin="90,41,0,0" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnStop_Click"/>
+		<Button x:Name="btnRemoteConnect" Content="Connect " HorizontalAlignment="Left" Margin="451,14,0,0" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnRemoteConnect_Click"/>
+		<TextBox x:Name="txtChatWindow" HorizontalAlignment="Left" Height="309" Margin="10,68,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="516" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True">
+			<TextBox.BorderBrush>
+				<LinearGradientBrush EndPoint="0,20" MappingMode="Absolute" StartPoint="0,0">
+					<GradientStop Color="#FFABADB3" Offset="0.05"/>
+					<GradientStop Color="#FFE2E3EA" Offset="0.07"/>
+					<GradientStop Color="#FF0D2C49" Offset="1"/>
+				</LinearGradientBrush>
+			</TextBox.BorderBrush>
+		</TextBox>
+		<TextBox x:Name="txtMessage" HorizontalAlignment="Left" Height="54" Margin="10,382,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="516" AcceptsReturn="True"/>
+		<Button x:Name="btnSend" Content="Send" HorizontalAlignment="Left" Margin="10,441,0,0" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnSend_Click"/>
+		<TextBlock x:Name="txtStatus" HorizontalAlignment="Left" Margin="115,444,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="411"/>
+		<TextBox x:Name="txtFriendsList" HorizontalAlignment="Left" Height="426" Margin="531,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="169" IsReadOnlyCaretVisible="True" IsReadOnly="True"/>
+		<Button x:Name="btnChangeNick" Content="Change Nick" HorizontalAlignment="Left" Margin="251,10,0,0" VerticalAlignment="Top" Width="86" IsEnabled="False" Click="btnChangeNick_Click"/>
+		<TextBox x:Name="txtPort" HorizontalAlignment="Left" Height="23" Margin="457,40,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="69"/>
+		<Label Content=":" HorizontalAlignment="Left" Margin="445,39,0,0" VerticalAlignment="Top"/>
+		<TextBox x:Name="txtCustomPort" HorizontalAlignment="Left" Height="23" Margin="636,440,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="64"/>
+		<Label Content="Port" HorizontalAlignment="Left" Margin="599,439,0,0" VerticalAlignment="Top"/>
+		<Label x:Name="lbHack" Content="Hack Label" HorizontalAlignment="Left" Margin="370,10,0,0" VerticalAlignment="Top" FontSize="8" Width="52" Height="22"/>
 
 	</Grid>
 </Window>
