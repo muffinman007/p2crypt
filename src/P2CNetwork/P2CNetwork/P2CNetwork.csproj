@@ -30,13 +30,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NetworkServer.cs" />
@@ -47,6 +53,10 @@
     <ProjectReference Include="..\..\P2CCommon\P2CCommon\P2CCommon.csproj">
       <Project>{9073d64b-dd36-4982-8543-48e732b7d2fe}</Project>
       <Name>P2CCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\P2CCore\P2CCore\P2CCore.csproj">
+      <Project>{dbe51873-f540-4852-9b2a-8186bc7bf50e}</Project>
+      <Name>P2CCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
