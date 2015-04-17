@@ -12,5 +12,21 @@ namespace P2CCommon
  
 		byte[] Data{ get; }
 
+		PackageStatus PackageStatus{ get; }
+
+		Tuple<Guid, string, string> Information{ get; }
+
+		int Port{ get; }
+
 	}
+
+
+	public enum PackageStatus
+	{
+		Connect,
+		LogOff,
+		NickUpdate,
+		Message
+	}
+
 }
