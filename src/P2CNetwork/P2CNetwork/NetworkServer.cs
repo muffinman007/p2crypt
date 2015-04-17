@@ -65,7 +65,7 @@ namespace Network
 
 		#region Constructors
 
-		public NetworkServer(IPublicProfile userPublicProfile, System.Windows.Controls.Control control, int port = 12345, int backlog = 100)
+		public NetworkServer(IPublicProfile userPublicProfile, System.Windows.Controls.Control control, int port = 80, int backlog = 100)
 		{	
 			this.userPublicProfile = userPublicProfile;
 			crossCommuniationHack = control;
@@ -367,7 +367,8 @@ namespace Network
 		// for now if the same user keep connecting, do nothing. Might need to change in the future
 		public void ProcessIncomingData(Socket client)
 		{			
-			Package deliveryPackage;
+			Package deliveryPackage = null;
+			object testIncomingData = null;
 
 			int buffer = 1024;
 			int bytesRead = 0;
@@ -381,8 +382,28 @@ namespace Network
 				ms.Seek(0, SeekOrigin.Begin);
 
 				BinaryFormatter bf = new BinaryFormatter();
-				deliveryPackage = (Package)bf.Deserialize(ms);
+				testIncomingData = (object)bf.Deserialize(ms);
 			}			
+
+
+			// test and reject unwanted data
+			if(testIncomingData is Package)
+				deliveryPackage = (Package)testIncomingData;
+			else
+			{
+				// reject the data
+				Task.Factory.StartNew(()=>
+				{ 
+					MessageBox.Show(
+						"Unknown incoming raw data; Rejection." + Environment.NewLine +
+						"Remote End Point: " + client.RemoteEndPoint.ToString() 
+					); 
+				});
+
+				return;
+			}
+
+
 
 			switch(deliveryPackage.PackageStatus)
 			{
