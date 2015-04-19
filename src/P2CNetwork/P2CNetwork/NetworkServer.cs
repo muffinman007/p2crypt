@@ -181,7 +181,7 @@ namespace Network
 
 			tokenSource = new CancellationTokenSource();
 			
-			serverTask = Task.Factory.StartNew(()=>
+			serverTask = Task.Run(()=>
 			{
 				CancellationToken cancelToken = tokenSource.Token;
 				try{
@@ -189,12 +189,12 @@ namespace Network
 					{
 						Socket client = server.Accept();
 
-						Task.Factory.StartNew(()=>{ ProcessIncomingData(client); });
+						Task.Run(()=>{ ProcessIncomingData(client); });
 					}
 				}
 				catch(SocketException ex)
 				{
-					Task.Factory.StartNew(()=>
+					Task.Run(()=>
 					{ 
 						MessageBox.Show("Inside Server Task: " + Environment.NewLine +
 										"Exception: " + ex.Message + Environment.NewLine +
@@ -204,13 +204,13 @@ namespace Network
 					});
 				}
 
-				Task.Factory.StartNew(()=>{ MessageBox.Show("Debug inside serverTask. exiting."); });
+				Task.Run(()=>{ MessageBox.Show("Debug inside serverTask. exiting."); });
 			});
 
 			if(hasStartedOnce)
 			{
 				// let friends know user reconnected
-				Task.Factory.StartNew(()=>
+				Task.Run(()=>
 				{
 					foreach(var friendInfo in friendsIPaddressDict){
 						DeliverConnectRequest(friendInfo.Value);
@@ -236,7 +236,7 @@ namespace Network
 			if(isWindowExiting)
 				SendOther(PackageStatus.LogOff, null); // exiting so doesn't matter if ui becomes non-responsive, UI is already hidden
 			else
-				Task.Factory.StartNew(()=>{ SendOther(PackageStatus.LogOff, null); });
+				Task.Run(()=>{ SendOther(PackageStatus.LogOff, null); });
 
 			//server.Shutdown(SocketShutdown.Both);
 			server.Close();
@@ -302,7 +302,7 @@ namespace Network
 			}
 			catch(SocketException se)
 			{
-				Task.Factory.StartNew(()=>
+				Task.Run(()=>
 				{
 					string str;
 					if(remoteSocket == null)
@@ -323,7 +323,7 @@ namespace Network
 			}
 			catch(Exception ex)
 			{
-				Task.Factory.StartNew(()=>
+				Task.Run(()=>
 				{
 					MessageBox.Show("Error while sending data" + Environment.NewLine +
 									ex.Message + Environment.NewLine);
@@ -390,7 +390,7 @@ namespace Network
 			}
 			catch(SocketException se)
 			{
-				Task.Factory.StartNew(()=>
+				Task.Run(()=>
 				{
 					string str;
 					if(remoteSocket == null)
@@ -410,7 +410,7 @@ namespace Network
 			}
 			catch(Exception ex)
 			{
-				Task.Factory.StartNew(()=>
+				Task.Run(()=>
 				{
 					MessageBox.Show("Error while sending data" + Environment.NewLine +
 									ex.Message + Environment.NewLine);
@@ -448,7 +448,7 @@ namespace Network
 			else
 			{
 				// reject the data
-				Task.Factory.StartNew(()=>
+				Task.Run(()=>
 				{ 
 					MessageBox.Show(
 						"Unknown incoming raw data; Rejection." + Environment.NewLine +
@@ -558,7 +558,7 @@ namespace Network
 			}
 			catch(Exception ex)
 			{
-				Task.Factory.StartNew(()=>
+				Task.Run(()=>
 				{
 					MessageBox.Show("Inside DeliverConnectRequest." + Environment.NewLine +
 									"Remote End Point: " + remoteEndPoint.ToString() + Environment.NewLine +
