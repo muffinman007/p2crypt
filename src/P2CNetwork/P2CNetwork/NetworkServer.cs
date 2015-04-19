@@ -123,10 +123,10 @@ namespace Network
 		/// <summary>
 		/// Start the process in which NetworkServer listen for incoming connection. Runs on a Separate Thread.
 		/// </summary>
-		public async void StartAsync()
+		public async Task StartAsync()
 		{
 			if(serverTask != null)
-				return;			
+				return;						
 
 			if(!hasStartedOnce){
 				Task t1 = Task.Run(async ()=>
@@ -143,23 +143,29 @@ namespace Network
 								if(!(defaultPort == recommendedPort))
 								{									
 									// make sure user is behind a NAT device
-									// in the future maybe use the Open.NAT built in NatDeviceNotFoundException ?
 									if(IsLanIP(localIP))
 									{
-										// set up UPnP
-										var discoverer = new NatDiscoverer();
+										try
+										{
+											// set up UPnP
+											var discoverer = new NatDiscoverer();
 
-										// using SSDP protocol, it discovers NAT device
-										natDevice = await discoverer.DiscoverDeviceAsync();
+											// using SSDP protocol, it discovers NAT device
+											natDevice = await discoverer.DiscoverDeviceAsync();
 
-										// uncomment for logging. recode the line properly
-										//Console.WriteLine("The external IP Address is: {0} ", await device.GetExternalIPAsync());
+											// uncomment for logging. recode the line properly
+											//Console.WriteLine("The external IP Address is: {0} ", await device.GetExternalIPAsync());
 
-										// create a new mapping in the router, external_ip:80 -> host_machine:defaultPort
-										// We are assuming advance user know what they are doing
-										// maybe in the future catch MappingException : http://www.codeproject.com/Articles/807861/Open-NAT-A-NAT-Traversal-library-for-NET-and-Mono
-										await natDevice.CreatePortMapAsync(new Mapping(Protocol.Tcp, defaultPort, NATPublicPort));										
-										isUpnpFeatureOn = true;
+											// create a new mapping in the router, external_ip:80 -> host_machine:defaultPort
+											// We are assuming advance user know what they are doing
+											// maybe in the future catch MappingException : http://www.codeproject.com/Articles/807861/Open-NAT-A-NAT-Traversal-library-for-NET-and-Mono
+											await natDevice.CreatePortMapAsync(new Mapping(Protocol.Tcp, defaultPort, NATPublicPort));										
+											isUpnpFeatureOn = true;
+										}
+										catch(NatDeviceNotFoundException natE)
+										{
+											// Log Open.NAT wasn't able to find an UPnP device
+										}
 									}
 								}								
 
@@ -212,7 +218,9 @@ namespace Network
 				});
 			}
 
-			hasStartedOnce = true;			
+			hasStartedOnce = true;		
+	
+			return;
 		}
 
 
