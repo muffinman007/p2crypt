@@ -128,7 +128,7 @@ namespace NetworkTest
 
 			String message = txtMessage.Text;
 
-			await Task.Factory.StartNew(()=>{ 
+			await Task.Run(()=>{ 
 				networkServer.Send(PackageStatus.Message, message); 
 			}).ConfigureAwait(false);
 
@@ -148,7 +148,7 @@ namespace NetworkTest
 				str = txtFriendsList.Text;
 
 			// some user may have thousands of nick on their list so it may be better to do the split on a different thread
-			Task.Factory.StartNew(()=>{
+			Task.Run(()=>{
 				string[] nickArray = null;
 				if(!string.IsNullOrEmpty(str))
 					nickArray = str.Split(new string[]{Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
@@ -201,7 +201,7 @@ namespace NetworkTest
 		private void btnRemoteConnect_Click(object sender, RoutedEventArgs e) {
 			string ip = cbFirstIP.Text + "." + cbSecondIP.Text + "." + cbThirdIP.Text + "." + cbFourthIP.Text + ":" + txtPort.Text;
 			
-			Task.Factory.StartNew(()=>{
+			Task.Run(()=>{
 				networkServer.ConnectToRemote(ip);
 			});
 		}
@@ -210,7 +210,7 @@ namespace NetworkTest
 			string oldNick = userAccount.UserNick;
 			userAccount.UserNick = txtNick.Text;
 
-			Task.Factory.StartNew(()=>{ networkServer.Send(PackageStatus.NickUpdate, oldNick); });
+			Task.Run(()=>{ networkServer.Send(PackageStatus.NickUpdate, oldNick); });
 			txtStatus.Text = "Nick change: " + oldNick + " to " + txtNick.Text;
 		}
 
