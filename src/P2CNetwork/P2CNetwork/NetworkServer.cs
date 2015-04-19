@@ -35,6 +35,7 @@ using System.IO;
 using P2CCommon;
 using System.Net.NetworkInformation;
 
+using Open.Nat;
 
 namespace Network 
 {
@@ -64,13 +65,14 @@ namespace Network
 		IPublicProfile userPublicProfile;
 		
 		const int recommendedPort = 15;					// this value has to be below 1024
+		const int NATPublicPort = 15;					// Assuming the average user is not using software that is listening on 80 (web server, IIS, skype, ect.)
 		int defaultPort;
 		int backlog;
 
 		System.Windows.Controls.Control crossCommuniationHack;
 
 		// allow UPnP feature
-		
+		NatDevice natDevice;
 
 		#endregion Fields
 
@@ -124,12 +126,10 @@ namespace Network
 		public async void StartAsync()
 		{
 			if(serverTask != null)
-				return;
-
-			TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+				return;			
 
 			if(!hasStartedOnce){
-				Task t1 = Task.Run(()=>
+				Task t1 = Task.Run(async ()=>
 							{
 								IPAddress localIP = null;
 								foreach(var ip in Dns.GetHostAddresses(Dns.GetHostName())){
@@ -143,30 +143,35 @@ namespace Network
 								if(!(defaultPort == recommendedPort))
 								{									
 									// make sure user is behind a NAT device
+									// in the future maybe use the Open.NAT built in NatDeviceNotFoundException ?
 									if(IsLanIP(localIP))
 									{
 										// set up UPnP
+										var discoverer = new NatDiscoverer();
 
+										// using SSDP protocol, it discovers NAT device
+										natDevice = await discoverer.DiscoverDeviceAsync();
 
+										// uncomment for logging. recode the line properly
+										//Console.WriteLine("The external IP Address is: {0} ", await device.GetExternalIPAsync());
+
+										// create a new mapping in the router, external_ip:80 -> host_machine:defaultPort
+										// We are assuming advance user know what they are doing
+										// maybe in the future catch MappingException : http://www.codeproject.com/Articles/807861/Open-NAT-A-NAT-Traversal-library-for-NET-and-Mono
+										await natDevice.CreatePortMapAsync(new Mapping(Protocol.Tcp, defaultPort, NATPublicPort));										
 										isUpnpFeatureOn = true;
 									}
 								}								
 
 								server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-								server.Bind(new IPEndPoint(localIP, defaultPort));
+								server.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
+								server.Bind(new IPEndPoint(IPAddress.Any, defaultPort));
 								server.LingerState = new LingerOption(false, 0);
 								server.Listen(backlog);	
 							});
 
 				await t1;
-				
-
-			}
-
-			//continue to work in here
-			//	set tcs.SetResult(true);
-			//	return tcs.Task 
-
+			}		
 
 			tokenSource = new CancellationTokenSource();
 			
@@ -207,7 +212,7 @@ namespace Network
 				});
 			}
 
-			hasStartedOnce = true;
+			hasStartedOnce = true;			
 		}
 
 
@@ -460,7 +465,7 @@ namespace Network
 
 					friendsProfileDict.TryAdd(deliveryPackage.PublicProfile.GlobalId, deliveryPackage.PublicProfile);
 
-					Package replyPackage = new Package(userPublicProfile, null, PackageStatus.Connect, null, defaultPort);
+					Package replyPackage = new Package(userPublicProfile, null, PackageStatus.Connect, null, (isUpnpFeatureOn? NATPublicPort : defaultPort) );
 					using(MemoryStream ms = new MemoryStream()){
 						BinaryFormatter bf = new BinaryFormatter();
 						bf.Serialize(ms, replyPackage);
@@ -523,7 +528,7 @@ namespace Network
 
 		public void DeliverConnectRequest(IPEndPoint remoteEndPoint)
 		{
-			Package deliveryPackage = new Package(userPublicProfile, null, PackageStatus.Connect, null, defaultPort);
+			Package deliveryPackage = new Package(userPublicProfile, null, PackageStatus.Connect, null, (isUpnpFeatureOn? NATPublicPort : defaultPort) );
 			
 			try
 			{
