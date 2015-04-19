@@ -10,6 +10,10 @@
  * TO DO: 
  *		- on send error to a specific ip , remove the owner of the specific ip and the ip 
  *		- I break the aysnc naming convention on some of the methods. It's so we can decided wheather or not to keep the mehtod as async or not.
+ *		
+ * 
+ * Credit:
+ *		UPnP : http://www.codeproject.com/Articles/807861/Open-NAT-A-NAT-Traversal-library-for-NET-and-Mono
  * 
  **/
 
@@ -30,6 +34,7 @@ using P2CCore;
 using System.IO;
 using P2CCommon;
 using System.Net.NetworkInformation;
+
 
 namespace Network 
 {
@@ -63,6 +68,9 @@ namespace Network
 		int backlog;
 
 		System.Windows.Controls.Control crossCommuniationHack;
+
+		// allow UPnP feature
+		
 
 		#endregion Fields
 
@@ -133,7 +141,8 @@ namespace Network
 
 								// first check if default port is not the recommendedPort
 								if(!(defaultPort == recommendedPort))
-								{
+								{									
+									// make sure user is behind a NAT device
 									if(IsLanIP(localIP))
 									{
 										// set up UPnP
@@ -154,9 +163,9 @@ namespace Network
 
 			}
 
-			continue to work in here
-				set tcs.SetResult(true);
-				return tcs.Task 
+			//continue to work in here
+			//	set tcs.SetResult(true);
+			//	return tcs.Task 
 
 
 			tokenSource = new CancellationTokenSource();
