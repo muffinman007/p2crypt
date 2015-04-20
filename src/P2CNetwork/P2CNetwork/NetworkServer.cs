@@ -146,6 +146,13 @@ namespace Network
 									{
 										try
 										{
+											Task.Run(()=>
+											{ 
+												MessageBox.Show("Inside StartAsync: " + Environment.NewLine +
+																"Starting the Upnp process"
+																);
+											});
+
 											// set up UPnP
 											var discoverer = new NatDiscoverer();
 
@@ -160,10 +167,24 @@ namespace Network
 											// maybe in the future catch MappingException : http://www.codeproject.com/Articles/807861/Open-NAT-A-NAT-Traversal-library-for-NET-and-Mono
 											await natDevice.CreatePortMapAsync(new Mapping(Protocol.Tcp, defaultPort, NATPublicPort));										
 											isUpnpFeatureOn = true;
+
+											Task.Run(()=>
+											{ 
+												MessageBox.Show("Inside StartAsync: " + Environment.NewLine +
+																"UPnP process successful"
+																);
+											});
 										}
 										catch(NatDeviceNotFoundException natE)
 										{
 											// Log Open.NAT wasn't able to find an UPnP device
+											Task.Run(()=>
+											{ 
+												MessageBox.Show("Inside StartAsync: " + Environment.NewLine +
+																"Exception: " + natE.Message + Environment.NewLine +
+																"Exception type: " + natE.GetType().ToString() + Environment.NewLine
+																);
+											});
 										}
 									}
 								}								
@@ -472,18 +493,33 @@ namespace Network
 
 					friendsProfileDict.TryAdd(deliveryPackage.PublicProfile.GlobalId, deliveryPackage.PublicProfile);
 
-					Package replyPackage = new Package(userPublicProfile, null, PackageStatus.Connect, null, (isUpnpFeatureOn? NATPublicPort : defaultPort) );
-					using(MemoryStream ms = new MemoryStream()){
-						BinaryFormatter bf = new BinaryFormatter();
-						bf.Serialize(ms, replyPackage);
-						ms.Seek(0, SeekOrigin.Begin);
-						byte[] raw = ms.ToArray();
+					try
+					{
+						Package replyPackage = new Package(userPublicProfile, null, PackageStatus.Connect, null, (isUpnpFeatureOn? NATPublicPort : defaultPort) );
+						using(MemoryStream ms = new MemoryStream()){
+							BinaryFormatter bf = new BinaryFormatter();
+							bf.Serialize(ms, replyPackage);
+							ms.Seek(0, SeekOrigin.Begin);
+							byte[] raw = ms.ToArray();
 						
-						Socket replySocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-						replySocket.Connect(remoteAdd);
-						int byteSent = replySocket.Send(raw, 0, raw.Length, SocketFlags.None);
-						replySocket.Close();
-						replySocket = null;
+							Socket replySocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+							replySocket.Connect(remoteAdd);
+							int byteSent = replySocket.Send(raw, 0, raw.Length, SocketFlags.None);
+							replySocket.Close();
+							replySocket = null;
+						}
+					}
+					catch(SocketException se)
+					{
+						Task.Run(()=>
+						{
+							MessageBox.Show("Inside ProcessIncomingData" + Environment.NewLine +
+											"Remote connected but can't send data out is most likely the issue" + Environment.NewLine +
+											"Remote End Point: " + client.ToString() + Environment.NewLine +
+											"Socket Exception: " + se.GetType() + Environment.NewLine +
+											"Message: " + se.Message + Environment.NewLine +
+											"Error Code: " + se.NativeErrorCode + Environment.NewLine );
+						});
 					}
 					break;
 
