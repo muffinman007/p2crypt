@@ -147,6 +147,13 @@ namespace Network
 									{
 										try
 										{
+											Task.Run(()=>
+											{ 
+												MessageBox.Show("Inside StartAsync: " + Environment.NewLine +
+																"Starting the Upnp process"
+																);
+											});
+
 											// set up UPnP
 											var discoverer = new NatDiscoverer();
 
@@ -161,10 +168,24 @@ namespace Network
 											// maybe in the future catch MappingException : http://www.codeproject.com/Articles/807861/Open-NAT-A-NAT-Traversal-library-for-NET-and-Mono
 											await natDevice.CreatePortMapAsync(new Mapping(Protocol.Tcp, defaultPort, NATPublicPort));										
 											isUpnpFeatureOn = true;
+
+											Task.Run(()=>
+											{ 
+												MessageBox.Show("Inside StartAsync: " + Environment.NewLine +
+																"UPnP process successful"
+																);
+											});
 										}
 										catch(NatDeviceNotFoundException natE)
 										{
 											// Log Open.NAT wasn't able to find an UPnP device
+											Task.Run(()=>
+											{ 
+												MessageBox.Show("Inside StartAsync: " + Environment.NewLine +
+																"Exception: " + natE.Message + Environment.NewLine +
+																"Exception type: " + natE.GetType().ToString() + Environment.NewLine
+																);
+											});
 										}
 									}
 								}								
