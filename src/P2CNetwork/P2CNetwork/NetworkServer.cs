@@ -34,7 +34,6 @@ using P2CCore;
 using System.IO;
 using P2CCommon;
 using System.Net.NetworkInformation;
-
 using Open.Nat;
 
 namespace Network 
