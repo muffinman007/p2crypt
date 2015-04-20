@@ -186,6 +186,16 @@ namespace Network
 																);
 											});
 										}
+										catch(MappingException me){
+											Task.Run(()=>
+											{ 
+												MessageBox.Show("Inside StartAsync: " + Environment.NewLine +
+																"Exception: " + me.Message + Environment.NewLine +
+																"Exception type: " + me.GetType().ToString() + Environment.NewLine +
+																"Error Code: " + me.ErrorCode.ToString()
+																);
+											});
+										}
 									}
 								}								
 
