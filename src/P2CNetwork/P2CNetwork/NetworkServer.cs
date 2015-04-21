@@ -34,7 +34,6 @@ using P2CCore;
 using System.IO;
 using P2CCommon;
 using System.Net.NetworkInformation;
-
 using Open.Nat;
 
 namespace Network 
@@ -65,8 +64,9 @@ namespace Network
 		IPublicProfile userPublicProfile;
 		
 		const int recommendedPort = 15;					// this value has to be below 1024
-		const int NATPublicPort = 15;					// Assuming the average user is not using software that is listening on 80 (web server, IIS, skype, ect.)
-		int defaultPort;
+		int NATPublicPort;
+        int privatePort;
+        int defaultPort;                                // May need to declare this const and set it here, since it's default.
 		int backlog;
 
 		System.Windows.Controls.Control crossCommuniationHack;
@@ -91,7 +91,8 @@ namespace Network
 			friendsProfileDict		= new ConcurrentDictionary<Guid,IPublicProfile>();
 			friendsIPaddressDict	= new ConcurrentDictionary<Guid,IPEndPoint>();
 
-			defaultPort = port;	
+			NATPublicPort = port;
+            privatePort = port;
 			this.backlog = backlog;	
 		}
 
@@ -166,7 +167,9 @@ namespace Network
 											// create a new mapping in the router, external_ip:80 -> host_machine:defaultPort
 											// We are assuming advance user know what they are doing
 											// maybe in the future catch MappingException : http://www.codeproject.com/Articles/807861/Open-NAT-A-NAT-Traversal-library-for-NET-and-Mono
-											await natDevice.CreatePortMapAsync(new Mapping(Protocol.Tcp, defaultPort, NATPublicPort));										
+											
+                                            // 600 is the lifetime of the portmapping, this will need to be configurable in the future. If not for the user, for the ViewModel 
+                                            await natDevice.CreatePortMapAsync(new Mapping(Protocol.Tcp, privatePort, NATPublicPort, 600, "P2Crypt Portmapping"));										
 											isUpnpFeatureOn = true;
 
 											Task.Run(()=>
