@@ -13,6 +13,7 @@ namespace P2CCommon
         ITextList TextMessage { get; }
         ITextList TextChatWindow { get; }
         int DefaultPort { get; }
+        int PrivatePort { get; }
         ITextList TextFriendsList { get; }
     }
 

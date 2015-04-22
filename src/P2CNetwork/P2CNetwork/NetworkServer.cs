@@ -142,7 +142,7 @@ namespace Network
 								}
 
 								// first check if default port is not the recommendedPort
-								if(!(defaultPort == recommendedPort))
+								if(!(privatePort == recommendedPort))
 								{									
 									// make sure user is behind a NAT device
 									if(IsLanIP(localIP))
@@ -206,7 +206,7 @@ namespace Network
 
 								server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 								server.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
-								server.Bind(new IPEndPoint(IPAddress.Any, defaultPort));
+								server.Bind(new IPEndPoint(IPAddress.Any, privatePort));
 								server.LingerState = new LingerOption(false, 0);
 								server.Listen(backlog);	
 							});
@@ -219,11 +219,10 @@ namespace Network
 			serverTask = Task.Run(()=>
 			{
 				CancellationToken cancelToken = tokenSource.Token;
-				try{
+				try {
 					while(!cancelToken.IsCancellationRequested)
 					{
 						Socket client = server.Accept();
-
 						Task.Run(()=>{ ProcessIncomingData(client); });
 					}
 				}
@@ -510,7 +509,7 @@ namespace Network
 
 					try
 					{
-						Package replyPackage = new Package(userPublicProfile, null, PackageStatus.Connect, null, (isUpnpFeatureOn? NATPublicPort : defaultPort) );
+						Package replyPackage = new Package(userPublicProfile, null, PackageStatus.Connect, null, (isUpnpFeatureOn? NATPublicPort : privatePort) );
 						using(MemoryStream ms = new MemoryStream()){
 							BinaryFormatter bf = new BinaryFormatter();
 							bf.Serialize(ms, replyPackage);
@@ -586,7 +585,7 @@ namespace Network
 
 		public void DeliverConnectRequest(IPEndPoint remoteEndPoint)
 		{
-			Package deliveryPackage = new Package(userPublicProfile, null, PackageStatus.Connect, null, (isUpnpFeatureOn? NATPublicPort : defaultPort) );
+			Package deliveryPackage = new Package(userPublicProfile, null, PackageStatus.Connect, null, (isUpnpFeatureOn? NATPublicPort : privatePort) );
 			
 			try
 			{
