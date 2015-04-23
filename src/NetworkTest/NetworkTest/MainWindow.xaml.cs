@@ -203,7 +203,7 @@ namespace NetworkTest
 		}
 
 		private void btnRemoteConnect_Click(object sender, RoutedEventArgs e) {
-			string ip = cbFirstIP.Text + "." + cbSecondIP.Text + "." + cbThirdIP.Text + "." + cbFourthIP.Text + ":" + (String.IsNullOrEmpty(txtCustomPort.Text)? publicPort.ToString() : txtPort.Text);
+			string ip = cbFirstIP.Text + "." + cbSecondIP.Text + "." + cbThirdIP.Text + "." + cbFourthIP.Text + ":" + (String.IsNullOrEmpty(txtPort.Text)? publicPort.ToString() : txtPort.Text);
 			
 			Task.Run(()=>{
 				networkServer.ConnectToRemote(ip);
