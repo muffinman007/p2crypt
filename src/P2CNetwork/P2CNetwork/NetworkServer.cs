@@ -63,7 +63,7 @@ namespace Network
 
 		IPublicProfile userPublicProfile;
 		
-		const int recommendedPort = 15;					// this value has to be below 1024
+		const int recommendedDefaultPort = 15;			// this value has to be below 1024
 		int NATPublicPort;
         int privatePort;
         int defaultPort;                                // May need to declare this const and set it here, since it's default.
@@ -142,7 +142,7 @@ namespace Network
 								}
 
 								// first check if default port is not the recommendedPort
-								if(!(privatePort == recommendedPort))
+								if(!(privatePort == recommendedDefaultPort))
 								{									
 									// make sure user is behind a NAT device
 									if(IsLanIP(localIP))
@@ -567,23 +567,27 @@ namespace Network
 
 		// if user enter wrong ip , do nothing. Maybe IP error correction should be done at the main program?
 		// if user enter the wrong IP return. need to implement a better way to let user know ip address is wrong
-		public void ConnectToRemote(string ip)
+		public void ConnectToRemote(string ip, string port)
 		{
-			string[] ipParts = ip.Split(new string[]{":"}, StringSplitOptions.None);
-
 			IPAddress remoteIP;
 
-			if(!IPAddress.TryParse(ipParts[0], out remoteIP))
+			if(!IPAddress.TryParse(ip, out remoteIP))
 				return;
 
-			int port;
+			int remotePort;
 
-			if(!int.TryParse(ipParts[1], out port))
-				return;
-			else if(port < 1 || port > ushort.MaxValue)
-				return;
+			if(string.IsNullOrEmpty(port))
+				remotePort = recommendedDefaultPort;
+			else
+			{
 
-			DeliverConnectRequest(new IPEndPoint(remoteIP, port));	
+				if(!int.TryParse(port, out remotePort))
+					return;
+				else if(remotePort < 1 || remotePort > ushort.MaxValue)
+					return;
+			}
+
+			DeliverConnectRequest(new IPEndPoint(remoteIP, remotePort));	
 		}
 
 		public void DeliverConnectRequest(IPEndPoint remoteEndPoint)
