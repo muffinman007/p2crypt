@@ -63,7 +63,7 @@ namespace Network
 
 		IPublicProfile userPublicProfile;
 		
-		const int recommendedDefaultPort = 15;			// this value has to be below 1024
+		const int recommendedDefaultPort = 6886;		// this value has to be below 1024
 		int NATPublicPort;
         int privatePort;
         int defaultPort;                                // May need to declare this const and set it here, since it's default.
@@ -80,7 +80,7 @@ namespace Network
 		#region Constructors
 
         
-		public NetworkServer(IPublicProfile userPublicProfile, System.Windows.Controls.Control control, int port = 6886, int backlog = 100)
+		public NetworkServer(IPublicProfile userPublicProfile, System.Windows.Controls.Control control, int port = recommendedDefaultPort, int backlog = 100)
 		{	
 			this.userPublicProfile = userPublicProfile;
 			crossCommuniationHack = control;
