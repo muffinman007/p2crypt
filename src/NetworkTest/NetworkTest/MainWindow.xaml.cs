@@ -174,6 +174,8 @@ namespace NetworkTest
 						break;
 
 					case PackageStatus.NickUpdate:
+						// item2 = old nick
+						// item3 = new nick
 						for(int i = 0; i < nickArray.Length; ++i){
 							if(string.Equals(nickArray[i], package.Information.Item2)){
 								nickArray[i] = package.Information.Item3;
@@ -210,7 +212,8 @@ namespace NetworkTest
 			string oldNick = userAccount.UserNick;
 			userAccount.UserNick = txtNick.Text;
 
-			Task.Run(()=>{ networkServer.Send(PackageStatus.NickUpdate, oldNick); });
+			// send nick data old nick + new nick
+			Task.Run(()=>{ networkServer.Send(PackageStatus.NickUpdate, oldNick + " " + txtNick.Text); });
 			txtStatus.Text = "Nick change: " + oldNick + " to " + txtNick.Text;
 		}
 

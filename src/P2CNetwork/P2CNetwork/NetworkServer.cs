@@ -383,9 +383,12 @@ namespace Network
 					Package deliveryPackage = null;
 					if(status == PackageStatus.NickUpdate)
 					{
+						// nickData[0] = old nick
+						// nickData[1] = new nick
+						string[] nickData = strData.Split(new char[]{' '});
 						deliveryPackage = new Package(
 							null,
-							new Tuple<Guid,string, string>(userPublicProfile.GlobalId, strData, userPublicProfile.UserNick),
+							new Tuple<Guid,string, string>(userPublicProfile.GlobalId, nickData[0], nickData[1]),
 							PackageStatus.NickUpdate,
 							null,
 							0
