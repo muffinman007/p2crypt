@@ -28,6 +28,8 @@ namespace NetworkTest
 
 		#region Fields
 
+		int publicPort = 6886;
+
 		bool hasServerStarted;
 		bool isWindowClosing;
 
@@ -63,7 +65,7 @@ namespace NetworkTest
 			
 			if(networkServer == null){
 				if(String.IsNullOrEmpty(txtCustomPort.Text))
-					networkServer = new NetworkServer(userAccount.PublicProfile, lbHack); 
+					networkServer = new NetworkServer(userAccount.PublicProfile, lbHack, publicPort); 
 				else
 					networkServer = new NetworkServer(userAccount.PublicProfile, lbHack, int.Parse(txtCustomPort.Text));
 
@@ -201,7 +203,7 @@ namespace NetworkTest
 		}
 
 		private void btnRemoteConnect_Click(object sender, RoutedEventArgs e) {
-			string ip = cbFirstIP.Text + "." + cbSecondIP.Text + "." + cbThirdIP.Text + "." + cbFourthIP.Text + ":" + txtPort.Text;
+			string ip = cbFirstIP.Text + "." + cbSecondIP.Text + "." + cbThirdIP.Text + "." + cbFourthIP.Text + ":" + (String.IsNullOrEmpty(txtCustomPort.Text)? publicPort.ToString() : txtPort.Text);
 			
 			Task.Run(()=>{
 				networkServer.ConnectToRemote(ip);
