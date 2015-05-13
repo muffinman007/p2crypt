@@ -11,26 +11,39 @@ namespace P2CNetwork
 {
     public class PortHopper
     {
-        /// TODO: Asyncify this mess; implement methods
-        // Remove these if/when implementing autoproperties - some of these will probably need to be public
-        private int portSwitchTime;
-        private int currentPort;
-        private int lastUsedPort;
+        /// TODO: Raise event to be consumed outside of class (?) Upon successful change. Caller must notify peers of change
+        /// TODO: Use Timer to implement 'hopping' behavior (i.e. call ChangePortAsync every x seconds)
+        /// TODO: Implement other criteria on when to hop to a new port
+        private Random rngInstance = new Random();
         private NatDevice natDevice;
 
         public PortHopper(NatDevice natDevice, int portSwitchTime) {
-            this.portSwitchTime = portSwitchTime;
+            this.PortSwitchTime = portSwitchTime;
             this.natDevice = natDevice;
         }
 
-        public void ChangePort()
-        {
+        #region Public Properties
+        public int PortSwitchTime { get; set; }
+        public int CurrentPort { get; set; }
+        public int LastUsedPort { get; set; }
+        #endregion
 
+        #region Methods
+
+        public async void ChangePortAsync(int newPort = 0)
+        {
+            if (newPort == 0) {
+                newPort = rngInstance.Next(1023,65535);
+            }
+            await natDevice.CreatePortMapAsync(new Mapping(Protocol.Tcp, newPort, newPort, PortSwitchTime, "P2Crypt Portmapping"));
+            if (CurrentPort != null) {
+                LastUsedPort = CurrentPort;
+            }
+            CurrentPort = newPort;
         }
 
-        public void GeneratePort()
-        {
+        #endregion
 
-        }
-     }
+        
+    }
 }
