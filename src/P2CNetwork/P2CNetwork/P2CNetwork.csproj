@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="NetworkServer.cs" />
     <Compile Include="Package.cs" />
+    <Compile Include="PortHopper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
